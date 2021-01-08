@@ -1,20 +1,25 @@
 const express = require('express');
 const request = require('request');
 const serverless = require('serverless-http');
+var xml = require('xml');
 
 const app = express();
 const router = express.Router();
 
-router.get('/blog', (req, res) => {
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+router.get('/blog', (req, res) => {
+  res.set('Content-Type', 'text/xml');
   request(
     { url: 'https://medium.com/feed/@brandon.j.hiles' },
     (error, response, body) => {
       if (error || response.statusCode !== 200) {
         return res.status(500).json({ type: 'error', message: err.message });
       }
-
-      res.send(body);
+      res.send(body)
     }
   )
 });
